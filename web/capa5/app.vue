@@ -9,7 +9,7 @@ const toggleDark = useToggle(isDark);
   <div id="root">
     <NuxtRouteAnnouncer />
     <AppHeader @themeChange="toggleDark()" />
-    <NuxtPage />
+    <NuxtPage id="content"/>
     <AppFooter />
   </div>
 </template>
@@ -18,10 +18,12 @@ const toggleDark = useToggle(isDark);
 @import 'primeicons/primeicons.css';
 
 #root {
+  min-height: 100vh;
   @apply bg-white text-black dark:bg-gray dark:text-white
 }
 
-h1 {
-  @apply text-3xl my-2
+#content {
+  min-height: calc(100vh - 8rem);
+  @apply bg-white text-black dark:bg-gray dark:text-white w-1/2 mx-auto my-16
 }
 </style>

@@ -3,14 +3,13 @@
 </script>
 
 <template>
-  <div id="content">
+  <div>
     <slot/>
   </div>
 </template>
 
 <style scoped>
-#content {
-  min-height: calc(100vh - 8em);
-  @apply bg-white text-black dark:bg-gray dark:text-white mx-32
+h1 {
+  @apply text-3xl my-2
 }
 </style>

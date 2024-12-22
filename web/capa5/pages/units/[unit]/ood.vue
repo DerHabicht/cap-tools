@@ -4,7 +4,7 @@ import { Member } from '~/types/member'
 import { Uniform } from '~/types/uniforms'
 import { Unit } from '~/types/unit'
 
-const meetingBlocks = [
+const meetingBlocks:MeetingBlock[] = [
       new MeetingBlock(
           new Date('2024-12-19T18:00-07:00'),
           new Date('2024-12-19T18:10-07:00'),
@@ -24,15 +24,15 @@ const meetingBlocks = [
         'Gym',
       ),
       new MeetingBlock(
-        new Date('2024-12-19T18:55-07:00'),
-        new Date('2024-12-19T19:25-07:00'),
-        'White Elephant Gift Exchange',
-        'Gym',
+          new Date('2024-12-19T19:25-07:00'),
+          new Date('2024-12-19T19:30-07:00'),
+          'Break',
+          'Gym',
       ),
       new MeetingBlock(
           new Date('2024-12-19T19:30-07:00'),
           new Date('2024-12-19T20:15-07:00'),
-          'Break',
+          'White Elephant Gift Exchange',
           'Gym',
       ),
       new MeetingBlock(

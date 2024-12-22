@@ -47,7 +47,7 @@ const items = ref([
 <style scoped>
 
 #site-icon {
-  height: 5em;
+  height: 5rem;
   @apply p-1
 }
 
@@ -56,7 +56,7 @@ const items = ref([
 }
 
 .gravatar {
-  height: 2em;
+  height: 2rem;
 }
 
 .menu-item {
@@ -69,7 +69,7 @@ const items = ref([
 }
 
 .p-menubar{
-  height: 6em;
+  height: 6rem;
   @apply flex items-center px-3 py-2 gap-2
   bg-symbolBlue
   text-white
