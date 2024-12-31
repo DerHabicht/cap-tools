@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { Meeting, MeetingBlock } from '~/types/meeting'
+import { formatUniformList } from '~/types/uniforms'
 import { Member } from '~/types/member'
 import { Unit } from '~/types/unit'
+import { formatDate, formatTime } from '~/utils/date'
 
 const props = defineProps({
     unit: Unit,
@@ -29,43 +31,52 @@ const props = defineProps({
       <div id="memo">
         <div id="header">
           <div id="date">
-            <p>{{ props.meeting.formatDateLong() }}</p>
+            <p>{{ formatDate(props.meeting.start, 'long') }}</p>
           </div>
           <div class="h-4"/>
           <p>MEMORANDUM FOR {{ props.unit.name.toUpperCase() }}</p>
           <div class="h-4"/>
           <p>FROM: {{ props.author.officeSymbol }}</p>
           <div class="h-4"/>
-          <p>SUBJECT: {{ props.meeting.formatDateLong().toUpperCase() }} ORDERS OF THE DAY</p>
+          <p>SUBJECT: {{ formatDate(props.meeting.start, 'long').toUpperCase() }} ORDERS OF THE DAY</p>
         </div>
         <div id="body">
           <ol>
-            <li>This meeting is operations night, with class sections for USAFA Admissions and Christmas fun!</li>
-            <li>The meeting will be conducted between 1800 MST and 2030 MST (6:00 P.M. to 8:30 P.M.). The schedule
-              is as follows:
+            <li>
+              On {{ formatDate(props.meeting.start, 'full') }}, the {{ props.unit.name }} will be holding a
+              {{ props.meeting.meetingType }} at {{ props.meeting.location }} ({{ props.meeting.address }}). The topic
+              is {{ props.meeting.topic }}.
+            </li>
+            <li>The meeting will be conducted between {{ formatTime(props.meeting.start, 'full') }} and
+              {{ formatTime(props.meeting.end, 'full') }} ({{ formatTime(props.meeting.start, 'heathen') }} to
+              {{ formatTime(props.meeting.end, 'heathen') }}). The schedule is as follows:
               <table>
                 <thead>
                   <tr>
-                    <th>Time</th>
+                    <th>Start</th>
+                    <th>End</th>
                     <th>Activity</th>
                     <th>Location</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="block in meeting.blocks" :key="block.start">
-                    <td>{{ block.formatStartTime() }}</td>
+                    <td>{{ formatTime(block.start, 'short') }}</td>
+                    <td>{{ formatTime(block.end, 'short') }}</td>
                     <td>{{ block.topic }}</td>
                     <td>{{ block.location }}</td>
                   </tr>
                 </tbody>
               </table>
             </li>
-            <li>
-              Uniform of the Day is ABU, CWU, CFU, or squadron t-shirt and slacks.
+            <li v-if="props.meeting.uod.length > 1">
+              The uniforms of the day are the {{ formatUniformList(props.meeting.uod, 'or') }}.
             </li>
-            <li>
-              All cadets must report to their chain of command with their attendance for this meeting, testing
-              requests, and/or promotion request. See attached BCSW 503 Promotion Request Worksheet for promotions.
+            <li v-else>
+              The uniform of the day is the {{ props.meeting.uod[0] }}.
+            </li>
+            <li v-if="props.meeting.additionalOrders">
+              {{ props.meeting.additionalOrders }}
             </li>
           </ol>
         </div>

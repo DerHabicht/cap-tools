@@ -1,53 +1,59 @@
 <script setup lang="ts">
-import { Meeting, MeetingBlock } from '~/types/meeting'
+import { DateTime } from 'luxon';
+import { MeetingType, Meeting, MeetingBlock } from '~/types/meeting'
 import { Member } from '~/types/member'
 import { Uniform } from '~/types/uniforms'
 import { Unit } from '~/types/unit'
 
 const meetingBlocks:MeetingBlock[] = [
       new MeetingBlock(
-          new Date('2024-12-19T18:00-07:00'),
-          new Date('2024-12-19T18:10-07:00'),
+          DateTime.fromISO('2024-12-19T18:00-07:00'),
+          DateTime.fromISO('2024-12-19T18:10-07:00'),
           'Opening Formation',
           'Gym',
       ),
       new MeetingBlock(
-          new Date('2024-12-19T18:10-07:00'),
-          new Date('2024-12-19T18:55-07:00'),
+          DateTime.fromISO('2024-12-19T18:10-07:00'),
+          DateTime.fromISO('2024-12-19T18:55-07:00'),
           'USAFA Admissions',
           'Auditorium',
       ),
       new MeetingBlock(
-        new Date('2024-12-19T18:55-07:00'),
-        new Date('2024-12-19T19:25-07:00'),
+        DateTime.fromISO('2024-12-19T18:55-07:00'),
+        DateTime.fromISO('2024-12-19T19:25-07:00'),
         'Flight Time',
         'Gym',
       ),
       new MeetingBlock(
-          new Date('2024-12-19T19:25-07:00'),
-          new Date('2024-12-19T19:30-07:00'),
+          DateTime.fromISO('2024-12-19T19:25-07:00'),
+          DateTime.fromISO('2024-12-19T19:30-07:00'),
           'Break',
           'Gym',
       ),
       new MeetingBlock(
-          new Date('2024-12-19T19:30-07:00'),
-          new Date('2024-12-19T20:15-07:00'),
+          DateTime.fromISO('2024-12-19T19:30-07:00'),
+          DateTime.fromISO('2024-12-19T20:15-07:00'),
           'White Elephant Gift Exchange',
           'Gym',
       ),
       new MeetingBlock(
-          new Date('2024-12-19T20:15-07:00'),
-          new Date('2024-12-19T20:30-07:00'),
+          DateTime.fromISO('2024-12-19T20:15-07:00'),
+          DateTime.fromISO('2024-12-19T20:30-07:00'),
           'Closing Formation',
           'Gym',
       ),
     ]
 
 const meeting = new Meeting(
-    new Date('2024-12-19T18:00-07:00'),
-    new Date('2024-12-19T20:30-07:00'),
+    'Utah National Guard Headquarters',
+    '12953 S Minuteman Drive, Draper, UT 84020',
+    DateTime.fromISO('2024-12-19T18:00-07:00'),
+    DateTime.fromISO('2024-12-19T20:30-07:00'),
+    MeetingType.RegularMeeting,
+    'Operations',
     meetingBlocks,
-    [Uniform.ABU, Uniform.CWU, Uniform.CFU]
+    [Uniform.ABU, Uniform.CWU, Uniform.CFU],
+    'All cadets must report to their chain of command with their attendance for this meeting, testing requests, and/or promotion request. See attached BCSW 503 Promotion Request Worksheet for promotions.'
 );
 
 const unit = new Unit(
