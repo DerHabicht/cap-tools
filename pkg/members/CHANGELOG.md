@@ -8,6 +8,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- Created the Uniform enum
+- Created the Member struct
 
 ### Changed
 
@@ -22,7 +24,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [v0.1.0]
 
 ### Added
--   Copied `MemberType` and `Grade` from v2.2.0 of the [old library](https://github.com/ag7if/cap).
+- Copied `MemberType` and `Grade` from v2.2.0 of the [old library](https://github.com/ag7if/cap).
 
 [unreleased]: https://github.com/DerHabicht/cap-tools/compare/members-v0.1.0...HEAD
 [v0.1.0]: https://github.com/DerHabicht/releases/tag/members-v0.1.0

@@ -6,7 +6,7 @@ export const enum Uniform {
     ABU = 'ABU',
     FDU = 'FDU',
     PTU = 'PTU',
-    CorporateSemiFormal = 'Corporate SemiFormal',
+    CorporateSemiFormal = 'Corporate Semi-Formal',
     CorporateServiceDress = 'Corporate Service Dress',
     Aviator = 'Aviator Combination',
     CWU = 'CWU',

@@ -6,6 +6,70 @@ import (
 	"github.com/pkg/errors"
 )
 
+var wingRegionLookup map[Wing]Region = map[Wing]Region{
+	ALWG: SoutheastRegion,
+	AZWG: SouthwestRegion,
+	ARWG: SouthwestRegion,
+	CAWG: PacificRegion,
+	COWG: RockyMountainRegion,
+	CTWG: NortheastRegion,
+	DEWG: MidAtlanticRegion,
+	FLWG: SoutheastRegion,
+	GAWG: SoutheastRegion,
+	IDWG: RockyMountainRegion,
+	ILWG: GreatLakesRegion,
+	INWG: GreatLakesRegion,
+	IAWG: NorthCentralRegion,
+	KSWG: NorthCentralRegion,
+	KYWG: GreatLakesRegion,
+	LAWG: SouthwestRegion,
+	MEWG: NortheastRegion,
+	MDWG: MidAtlanticRegion,
+	MAWG: NortheastRegion,
+	MIWG: GreatLakesRegion,
+	MNWG: NorthCentralRegion,
+	MSWG: SoutheastRegion,
+	MOWG: NorthCentralRegion,
+	MTWG: RockyMountainRegion,
+	DCWG: MidAtlanticRegion,
+	NEWG: NorthCentralRegion,
+	NVWG: PacificRegion,
+	NHWG: NortheastRegion,
+	NJWG: NortheastRegion,
+	NMWG: SouthwestRegion,
+	NYWG: NortheastRegion,
+	NCWG: MidAtlanticRegion,
+	NDWG: NorthCentralRegion,
+	OHWG: GreatLakesRegion,
+	OKWG: SouthwestRegion,
+	ORWG: PacificRegion,
+	PAWG: NortheastRegion,
+	RIWG: NortheastRegion,
+	SCWG: MidAtlanticRegion,
+	SDWG: NorthCentralRegion,
+	TNWG: SoutheastRegion,
+	TXWG: SouthwestRegion,
+	UTWG: RockyMountainRegion,
+	VTWG: NortheastRegion,
+	VAWG: MidAtlanticRegion,
+	WAWG: PacificRegion,
+	WVWG: MidAtlanticRegion,
+	WIWG: GreatLakesRegion,
+	WYWG: RockyMountainRegion,
+	AKWG: PacificRegion,
+	HIWG: PacificRegion,
+	PRWG: SoutheastRegion,
+	NER:  NortheastRegion,
+	MAR:  MidAtlanticRegion,
+	GLR:  GreatLakesRegion,
+	SER:  SoutheastRegion,
+	NCR:  NorthCentralRegion,
+	SWR:  SouthwestRegion,
+	RMR:  RockyMountainRegion,
+	PCR:  PacificRegion,
+	NHQ:  NationalHeadquarters,
+}
+
 type Wing uint
 
 const (
@@ -328,4 +392,8 @@ func (w Wing) String() string {
 	default:
 		panic(errors.Errorf("invalid wing code: %d", w))
 	}
+}
+
+func (w Wing) LookupRegion() Region {
+	return wingRegionLookup[w]
 }

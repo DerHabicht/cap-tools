@@ -5,6 +5,8 @@ type Unit struct {
 	kind          UnitKind
 	category      UnitCategory
 	name          string
+	address       string
+	city          string
 }
 
 func NewUnit(
@@ -12,12 +14,16 @@ func NewUnit(
 	kind UnitKind,
 	category UnitCategory,
 	name string,
+	address string,
+	city string,
 ) Unit {
 	return Unit{
 		charterNumber: charterNumber,
 		kind:          kind,
 		category:      category,
 		name:          name,
+		address:       address,
+		city:          city,
 	}
 }
 
@@ -35,4 +41,12 @@ func (u Unit) Category() UnitCategory {
 
 func (u Unit) Name() string {
 	return u.name
+}
+
+func (u Unit) Address() string {
+	return u.address
+}
+
+func (u Unit) City() string {
+	return u.city
 }

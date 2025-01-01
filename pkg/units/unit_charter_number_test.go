@@ -16,3 +16,14 @@ func TestParseCharterNumber(t *testing.T) {
 	assert.Equal(t, UTWG, ucn.Wing())
 	assert.Equal(t, uint(80), ucn.UnitNumber())
 }
+
+func TestParseShortCharterNumber(t *testing.T) {
+	charter := "UT-080"
+
+	ucn, err := ParseShortCharter(charter)
+	assert.NoError(t, err)
+
+	assert.Equal(t, RockyMountainRegion, ucn.Region())
+	assert.Equal(t, UTWG, ucn.Wing())
+	assert.Equal(t, uint(80), ucn.UnitNumber())
+}

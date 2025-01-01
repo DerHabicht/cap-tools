@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Meeting, MeetingBlock } from '~/types/meeting'
+import { Meeting } from '~/types/meeting'
 import { formatUniformList } from '~/types/uniforms'
 import { Member } from '~/types/member'
 import { Unit } from '~/types/unit'

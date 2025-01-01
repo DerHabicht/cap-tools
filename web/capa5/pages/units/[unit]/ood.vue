@@ -3,7 +3,7 @@ import { DateTime } from 'luxon';
 import { MeetingType, Meeting, MeetingBlock } from '~/types/meeting'
 import { Member } from '~/types/member'
 import { Uniform } from '~/types/uniforms'
-import { Unit } from '~/types/unit'
+import { Unit, UnitKind, UnitCategory } from '~/types/unit'
 
 const meetingBlocks:MeetingBlock[] = [
       new MeetingBlock(
@@ -57,9 +57,11 @@ const meeting = new Meeting(
 );
 
 const unit = new Unit(
-    'Blackhawk Cadet Squadron',
     'RMR-UT-080',
-    '12953 S Minuteman Dr',
+    UnitKind.Squadron,
+    UnitCategory.Cadet,
+    'Blackhawk Cadet Squadron',
+    '12953 S Minuteman Drive',
     'Draper, UT 84020'
 );
 

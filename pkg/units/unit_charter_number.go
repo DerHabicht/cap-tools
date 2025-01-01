@@ -1,6 +1,7 @@
 package units
 
 import (
+	"database/sql/driver"
 	"fmt"
 	"regexp"
 	"strconv"
@@ -9,6 +10,7 @@ import (
 )
 
 var charterRegex = regexp.MustCompile(`(\w+)-(\w+)-(\d{3})`)
+var shortCharterRegex = regexp.MustCompile(`(\w+)-(\d{3})`)
 
 type UnitCharterNumber struct {
 	region     Region
@@ -30,6 +32,28 @@ func ParseCharterNumber(charterNumber string) (UnitCharterNumber, error) {
 		return UnitCharterNumber{}, errors.WithStack(err)
 	}
 	unitNumber, err := strconv.Atoi(res[3])
+	if err != nil {
+		return UnitCharterNumber{}, errors.WithMessagef(err, "failed to parse units number from charter: %s", charterNumber)
+	}
+
+	return UnitCharterNumber{
+		region:     region,
+		wing:       wing,
+		unitNumber: uint(unitNumber),
+	}, nil
+}
+
+func ParseShortCharter(charterNumber string) (UnitCharterNumber, error) {
+	res := shortCharterRegex.FindStringSubmatch(charterNumber)
+	if len(res) < 3 {
+		return UnitCharterNumber{}, errors.Errorf("failed to parse short charter number: %s", charterNumber)
+	}
+	wing, err := ParseWing(res[1])
+	if err != nil {
+		return UnitCharterNumber{}, errors.WithStack(err)
+	}
+	region := wing.LookupRegion()
+	unitNumber, err := strconv.Atoi(res[2])
 	if err != nil {
 		return UnitCharterNumber{}, errors.WithMessagef(err, "failed to parse units number from charter: %s", charterNumber)
 	}
@@ -63,4 +87,45 @@ func (h UnitCharterNumber) ShortCharterNumber() string {
 
 func (h UnitCharterNumber) String() string {
 	return h.FullCharterNumber()
+}
+
+func (h UnitCharterNumber) MarshalJSON() ([]byte, error) {
+	return []byte(h.String()), nil
+}
+
+func (h *UnitCharterNumber) UnmarshalJSON(b []byte) error {
+	cn, err := ParseShortCharter(string(b))
+	if err != nil {
+		cn, err = ParseShortCharter(string(b))
+		if err != nil {
+			return errors.WithStack(err)
+		}
+	}
+
+	*h = cn
+
+	return nil
+}
+
+func (h UnitCharterNumber) Value() (driver.Value, error) {
+	return h.String(), nil
+}
+
+func (h *UnitCharterNumber) Scan(src interface{}) error {
+	s, ok := src.(string)
+	if !ok {
+		return errors.Errorf("failed to scan value as type UnitCharterNumber: %v", src)
+	}
+
+	cn, err := ParseCharterNumber(s)
+	if err != nil {
+		cn, err = ParseShortCharter(s)
+		if err != nil {
+			return errors.WithStack(err)
+		}
+	}
+
+	*h = cn
+
+	return nil
 }
