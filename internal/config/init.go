@@ -27,5 +27,4 @@ func init() {
 			log.Error().Err(err).Msg("failed to create default config")
 		}
 	}
-
 }

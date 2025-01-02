@@ -1,0 +1,49 @@
+SRC = $(shell find . -name "*.go")
+
+BASE_ENV_CONFIG_KEY = CAPTOOLS
+DEV_CONFIG_DIR=testdata/dev/config
+TEST_CONFIG_DIR=testdata/dev/test
+
+# Credit to https://github.com/commissure/go-git-build-vars for giving me a starting point for this.
+BUILD_TIME = `date +%Y%m%d%H%M%S`
+GIT_REVISION = `git rev-parse --short HEAD`
+GIT_BRANCH = `git rev-parse --symbolic-full-name --abbrev-ref HEAD | sed 's/\//-/g'`
+GIT_DIRTY = `git diff-index --quiet HEAD -- || echo 'x-'`
+
+LDFLAGS = -ldflags "-s -X main.BuildTime=$(BUILD_TIME) -X main.GitRevision=$(GIT_DIRTY)$(GIT_REVISION) -X main.GitBranch=$(GIT_BRANCH)"
+
+.PHONY: all
+all: bin/capa5srv
+
+bin/capa5srv: $(foreach f, $(SRC), $(f))
+	go build $(LD_FLAGS) -o bin/capa5srv cmd/capa5srv/main.go
+
+.PHONY: test_db_up
+test_db_up:
+	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(TEST_CONFIG_DIR) go run migrate.go up
+
+.PHONY: test
+test: bin/capa5
+	$(MAKE) test_db_reset
+	go test -v -count=1 ./...
+	$(MAKE) test_db_down
+
+.PHONY: dev_srv_run
+dev_srv_run: bin/capa5srv
+	WENDOVER_CONFIG=./testdata/dev/config bin/wendsrv run
+
+.PHONY: dev_db_up
+dev_db_up:
+	cd tools/migrate/ && WENDOVER_CONFIG=../../testdata/dev/config go run migrate.go up
+
+.PHONY: dev_db_down
+dev_db_down:
+	cd tools/migrate/ && WENDOVER_CONFIG=../../testdata/dev/config go run migrate.go down
+
+.PHONY: dev_db_reset
+dev_db_reset:
+	cd tools/migrate/ && WENDOVER_CONFIG=../../testdata/dev/config go run migrate.go reset
+
+.PHONY: clean
+clean:
+	rm -rf bin/

@@ -9,7 +9,7 @@ import (
 )
 
 var rootCmd = &cobra.Command{
-	Use:   "capa5",
+	Use:   "capa5srv",
 	Short: "Run the CAP/A5 server",
 	Long:  ``,
 	Args:  cobra.ExactArgs(1),
