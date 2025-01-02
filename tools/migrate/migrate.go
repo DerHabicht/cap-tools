@@ -21,14 +21,19 @@ import (
 	"github.com/derhabicht/cap-tools/internal/database"
 )
 
-func rootDBURL(user, password string) string {
+var (
+	rootDBUser = "postgres"
+	rootDBPass = "postgres"
+)
+
+func rootDBURL() string {
 	_ = viper.ConfigFileUsed()
 
 	if viper.GetBool("database.ssl") {
 		return fmt.Sprintf(
 			"postgres://%s:%s@%s:%s/%s",
-			user,
-			password,
+			rootDBUser,
+			rootDBPass,
 			viper.GetString(config.DatabaseHost),
 			viper.GetString(config.DatabasePort),
 			"postgres",
@@ -37,17 +42,17 @@ func rootDBURL(user, password string) string {
 
 	return fmt.Sprintf(
 		"postgres://%s:%s@%s:%s/%s?sslmode=disable",
-		user,
-		password,
+		rootDBUser,
+		rootDBPass,
 		viper.GetString(config.DatabaseHost),
 		viper.GetString(config.DatabasePort),
 		"postgres",
 	)
 }
 
-func rootDB(user, password string) (*sql.DB, error) {
-	url := rootDBURL(user, password)
-	db, err := sql.Open("ppx", url)
+func rootDB() (*sql.DB, error) {
+	url := rootDBURL()
+	db, err := sql.Open("pgx", url)
 	if err != nil {
 		return nil, errors.WithStack(err)
 	}
@@ -55,15 +60,22 @@ func rootDB(user, password string) (*sql.DB, error) {
 	return db, nil
 }
 
-func create(user, password string) error {
-	db, err := rootDB(user, password)
+func create() error {
+	// If we can successfully connect to the referenced database, we don't need to run this function
+	db, err := database.GetDB()
+	if err == nil {
+		_ = db.Close()
+		return nil
+	}
+
+	db, err = rootDB()
 	if err != nil {
 		return errors.WithStack(err)
 	}
 	defer db.Close()
 
 	log.Info().Str("database", viper.GetString(config.DatabaseName)).Msg("creating database")
-	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE IF NOT EXISTS %s;", viper.GetString(config.DatabaseName)))
+	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE %s;", viper.GetString(config.DatabaseName)))
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -71,8 +83,8 @@ func create(user, password string) error {
 	return nil
 }
 
-func drop(user, password string) error {
-	db, err := rootDB(user, password)
+func drop() error {
+	db, err := rootDB()
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -101,7 +113,7 @@ func reset(pollute bool) error {
 }
 
 func down() error {
-	log.Info().Str("database", viper.GetString("database.name")).Msg("migrating database down")
+	log.Info().Str("database", viper.GetString(config.DatabaseName)).Msg("migrating database down")
 	m, _, err := setup()
 	if err != nil {
 		return errors.WithStack(err)
@@ -117,18 +129,20 @@ func down() error {
 	version, dirty, err := m.Version()
 	if err != nil {
 		if strings.Contains(err.Error(), "no migration") {
-			log.Info().Str("database", viper.GetString("database.name")).Uint("version", 0).Bool("dirty", false).Msg("down migration complete")
+			log.Info().Str("database", viper.GetString(config.DatabaseName)).Uint("version", 0).Bool("dirty",
+				false).Msg("down migration complete")
 			return nil
 		}
 		return errors.WithStack(err)
 	}
 
-	log.Info().Str("database", viper.GetString("database.name")).Uint("version", version).Bool("dirty", dirty).Msg("down migration complete")
+	log.Info().Str("database", viper.GetString(config.DatabaseName)).Uint("version", version).Bool("dirty",
+		dirty).Msg("down migration complete")
 	return nil
 }
 
 func up(pollute bool) error {
-	log.Info().Str("database", viper.GetString("database.name")).Msg("migrating database up")
+	log.Info().Str("database", viper.GetString(config.DatabaseName)).Msg("migrating database up")
 	m, p, err := setup()
 	if err != nil {
 		return errors.WithStack(err)
@@ -145,7 +159,8 @@ func up(pollute bool) error {
 	if err != nil {
 		return errors.WithStack(err)
 	}
-	log.Info().Str("database", viper.GetString("database.name")).Uint("version", version).Bool("dirty", dirty).Msg("up migration complete")
+	log.Info().Str("database", viper.GetString(config.DatabaseName)).Uint("version", version).Bool("dirty",
+		dirty).Msg("up migration complete")
 
 	if pollute {
 		err = seed(p)
@@ -166,8 +181,8 @@ func seed(polluter *polluter.Polluter) error {
 		polluter = p
 	}
 
-	log.Info().Str("database", viper.GetString("database.name")).Msg("seeding database")
-	seedPath := viper.GetString("database.migration.seed")
+	log.Info().Str("database", viper.GetString(config.DatabaseName)).Msg("seeding database")
+	seedPath := viper.GetString(config.DatabaseMigrationSeed)
 
 	f, err := os.Open(seedPath)
 	if err != nil {
@@ -184,10 +199,15 @@ func seed(polluter *polluter.Polluter) error {
 }
 
 func setup() (*migrate.Migrate, *polluter.Polluter, error) {
+	err := create()
+	if err != nil {
+		return nil, nil, errors.WithStack(err)
+	}
+
 	dbURL := database.GetDBUrl()
 	log.Debug().Str("url", dbURL).Msg("database connection created")
 
-	migrationsPath := viper.GetString("database.migration.source")
+	migrationsPath := viper.GetString(config.DatabaseMigrationSource)
 	log.Debug().Str("path", migrationsPath).Msg("migrations path identified")
 
 	m, err := migrate.New(migrationsPath, dbURL)
@@ -207,8 +227,8 @@ func setup() (*migrate.Migrate, *polluter.Polluter, error) {
 
 func main() {
 	pollute := flag.Bool("seed", false, "seed database with test data after migration")
-	psqlRootUser := flag.String("psql-root-user", "postgres", "postgres admin username FOR DEV USE ONLY! ")
-	psqlRootPassword := flag.String("psql-root-password", "postgres", "postgres admin password FOR DEV USE ONLY! ")
+	flag.StringVar(&rootDBUser, "psql-root-user", "postgres", "postgres admin username FOR DEV USE ONLY! ")
+	flag.StringVar(&rootDBPass, "psql-root-password", "postgres", "postgres admin password FOR DEV USE ONLY! ")
 	flag.Parse()
 
 	cmd := flag.Arg(0)
@@ -224,9 +244,9 @@ func main() {
 	var err error
 	switch strings.ToLower(cmd) {
 	case "create":
-		err = create(*psqlRootUser, *psqlRootPassword)
+		err = create()
 	case "drop":
-		err = drop(*psqlRootUser, *psqlRootPassword)
+		err = drop()
 	case "up":
 		err = up(*pollute)
 	case "down":

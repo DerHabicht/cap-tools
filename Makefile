@@ -2,7 +2,7 @@ SRC = $(shell find . -name "*.go")
 
 BASE_ENV_CONFIG_KEY = CAPTOOLS
 DEV_CONFIG_DIR=testdata/dev/config
-TEST_CONFIG_DIR=testdata/dev/test
+TEST_CONFIG_DIR=testdata/test/config
 
 # Credit to https://github.com/commissure/go-git-build-vars for giving me a starting point for this.
 BUILD_TIME = `date +%Y%m%d%H%M%S`
@@ -18,9 +18,22 @@ all: bin/capa5srv
 bin/capa5srv: $(foreach f, $(SRC), $(f))
 	go build $(LD_FLAGS) -o bin/capa5srv cmd/capa5srv/main.go
 
+.PHONY: dev_setup
+dev_setup:
+	mkdir -p $(DEV_CONFIG_DIR)
+	mkdir -p $(TEST_CONFIG_DIR)
+
 .PHONY: test_db_up
 test_db_up:
 	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(TEST_CONFIG_DIR) go run migrate.go up
+
+.PHONY: test_db_down
+test_db_down:
+	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(TEST_CONFIG_DIR) go run migrate.go down
+
+.PHONY: test_db_reset
+test_db_reset:
+	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(TEST_CONFIG_DIR) go run migrate.go reset
 
 .PHONY: test
 test: bin/capa5
@@ -30,19 +43,19 @@ test: bin/capa5
 
 .PHONY: dev_srv_run
 dev_srv_run: bin/capa5srv
-	WENDOVER_CONFIG=./testdata/dev/config bin/wendsrv run
+	$(BASE_ENV_CONFIF_KEY)_CONFIG=./$(DEV_CONFIG_DIR) bin/capa5srv run
 
 .PHONY: dev_db_up
 dev_db_up:
-	cd tools/migrate/ && WENDOVER_CONFIG=../../testdata/dev/config go run migrate.go up
+	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(DEV_CONFIG_DIR) go run migrate.go up
 
 .PHONY: dev_db_down
 dev_db_down:
-	cd tools/migrate/ && WENDOVER_CONFIG=../../testdata/dev/config go run migrate.go down
+	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(DEV_CONFIG_DIR) go run migrate.go down
 
 .PHONY: dev_db_reset
 dev_db_reset:
-	cd tools/migrate/ && WENDOVER_CONFIG=../../testdata/dev/config go run migrate.go reset
+	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(DEV_CONFIG_DIR) go run migrate.go reset
 
 .PHONY: clean
 clean:

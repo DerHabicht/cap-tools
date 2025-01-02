@@ -7,7 +7,20 @@ import (
 	"github.com/spf13/viper"
 )
 
+func defaults() {
+	viper.SetDefault(DatabaseHost, "localhost")
+	viper.SetDefault(DatabasePort, "5432")
+	viper.SetDefault(DatabaseName, "capa5_dev")
+	viper.SetDefault(DatabaseUser, "postgres")
+	viper.SetDefault(DatabasePassword, "postgres")
+	viper.SetDefault(DatabaseSSL, false)
+	viper.SetDefault(DatabaseMigrationSource, "file:///path/to/migrations")
+	viper.SetDefault(DatabaseMigrationSeed, "/path/to/seed")
+}
+
 func init() {
+	defaults()
+
 	cfgDir, err := ConfigDir()
 	if err != nil {
 		log.Error().Err(err).Msg("could not find user config dir")
