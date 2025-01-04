@@ -11,7 +11,7 @@ export default <Partial<Config>>{
             afYellow: '#FFCD00',
             black: '#000000',
             white: '#FFFFFF',
-            gray: '#666666',
+            gray: '#444444',
         },
     },
     darkMode: 'selector',

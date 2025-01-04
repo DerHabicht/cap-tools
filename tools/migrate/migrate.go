@@ -61,14 +61,20 @@ func rootDB() (*sql.DB, error) {
 }
 
 func create() error {
-	// If we can successfully connect to the referenced database, we don't need to run this function
-	db, err := database.GetDB()
-	if err == nil {
-		_ = db.Close()
+	_, err := database.DBVersion()
+	if err != nil {
+		e := errors.Cause(err)
+		if !strings.Contains(
+			e.Error(),
+			fmt.Sprintf(`database "%s" does not exist`, viper.GetString(config.DatabaseName)),
+		) {
+			return errors.WithStack(err)
+		}
+	} else {
 		return nil
 	}
 
-	db, err = rootDB()
+	db, err := rootDB()
 	if err != nil {
 		return errors.WithStack(err)
 	}
@@ -236,7 +242,8 @@ func main() {
 		fmt.Println(
 			"Usage: go run migrate.go " +
 				"[--seed] [--psql-root-user=<postgres>] [--psql-root-password=<postgres>] " +
-				"[create|drop|up|down|reset|seed]",
+				"[create|drop|up|down|reset|seed]" +
+				"<new migration name>",
 		)
 		os.Exit(1)
 	}

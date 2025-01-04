@@ -3,6 +3,7 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/pkg/errors"
@@ -36,7 +37,6 @@ func GetDBUrl() string {
 }
 
 func GetDB() (*sql.DB, error) {
-	// TODO: Use connection pools
 	url := GetDBUrl()
 	db, err := sql.Open("pgx", url)
 	if err != nil {
@@ -44,4 +44,30 @@ func GetDB() (*sql.DB, error) {
 	}
 
 	return db, nil
+}
+
+func DBVersion() (int64, error) {
+	db, err := GetDB()
+	if err != nil {
+		return -1, errors.WithStack(err)
+	}
+	defer db.Close()
+
+	rows, err := db.Query("SELECT version FROM schema_migrations;")
+	if err != nil {
+		return -1, errors.WithStack(err)
+	}
+	defer rows.Close()
+
+	rows.Next()
+	var version int64
+	err = rows.Scan(&version)
+	if err != nil {
+		if strings.Contains(err.Error(), "Rows are closed") {
+			return 0, nil
+		}
+		return -1, errors.WithStack(err)
+	}
+
+	return version, nil
 }

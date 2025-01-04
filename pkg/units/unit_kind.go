@@ -11,6 +11,9 @@ type UnitKind int
 
 const (
 	UnknownUnitKind UnitKind = iota
+	NatlHQ
+	RegionHQ
+	WingHQ
 	Group
 	Squadron
 	Flight
@@ -18,6 +21,12 @@ const (
 
 func ParseUnitKind(s string) UnitKind {
 	switch strings.ToLower(s) {
+	case "nhq":
+		return NatlHQ
+	case "region":
+		return RegionHQ
+	case "wing":
+		return WingHQ
 	case "group":
 		return Group
 	case "squadron":
@@ -31,6 +40,12 @@ func ParseUnitKind(s string) UnitKind {
 
 func (u UnitKind) String() string {
 	switch u {
+	case NatlHQ:
+		return "nhq"
+	case RegionHQ:
+		return "region"
+	case WingHQ:
+		return "wing"
 	case Group:
 		return "group"
 	case Squadron:

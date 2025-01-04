@@ -1,8 +1,9 @@
 <template>
   <footer>
-    <p>CAP/A5&mdash;Units v0.1.0</p>
-    <div class="spacer"/>
-    <p>&copy;{{ new Date().getFullYear() }} Robert Herschel Hawk</p>
+    <p>
+      This site supports, but is <b>NOT</b> an official site of
+      <a href="https://gocivilairpatrol.com">Civil Air Patrol.</a>
+    </p>
   </footer>
 
 </template>
