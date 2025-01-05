@@ -10,17 +10,22 @@ import (
 
 type A5Repository interface {
 	CreateOrUpdateUnit(unit units.Unit) error
-	ListUnits() []units.Unit
-	FetchUnit(charter units.UnitCharterNumber) (*units.Unit, error)
+	ListUnits(searchName string, offset, limit int) ([]units.Unit, error)
+	FetchUnit(charterNumber units.UnitCharterNumber) (units.Unit, error)
 	DeleteUnit(unit units.Unit) error
 
-	CreateOrUpdateMeeting(unit capa5.Meeting) error
-	ListMeetings(charter units.UnitCharterNumber) []capa5.Meeting
-	FetchMeeting(id uuid.UUID) (*units.Unit, error)
+	CreateOrUpdateMeeting(meeting capa5.Meeting) error
+	ListMeetings(charterNumber units.UnitCharterNumber, offset, limit int) ([]capa5.Meeting, error)
+	FetchMeeting(meetingID uuid.UUID) (capa5.Meeting, error)
 	DeleteMeeting(meeting capa5.Meeting) error
 
 	CreateOrUpdateMember(member members.Member) error
-	ListMembers(charter units.UnitCharterNumber) []members.Member
+	ListMembers(charterNumber units.UnitCharterNumber, offset, limit int) ([]members.Member, error)
 	FetchMember(capid uint) (members.Member, error)
 	DeleteMember(member members.Member) error
+
+	CreateOrUpdateUser(user capa5.User) error
+	ListUsers(charterNumber units.UnitCharterNumber, offset, limit int) ([]capa5.User, error)
+	FetchUser(id uuid.UUID) (capa5.User, error)
+	DeleteUser(user capa5.User) error
 }

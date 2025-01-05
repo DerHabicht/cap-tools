@@ -33,13 +33,13 @@ test_db_down:
 
 .PHONY: test_db_reset
 test_db_reset:
-	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(TEST_CONFIG_DIR) go run migrate.go reset
+	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(TEST_CONFIG_DIR) go run migrate.go drop
+	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(TEST_CONFIG_DIR) go run migrate.go up
 
 .PHONY: test
-test: bin/capa5
+test: bin/capa5srv
 	$(MAKE) test_db_reset
 	go test -v -count=1 ./...
-	$(MAKE) test_db_down
 
 .PHONY: dev_srv_run
 dev_srv_run: bin/capa5srv
@@ -55,7 +55,8 @@ dev_db_down:
 
 .PHONY: dev_db_reset
 dev_db_reset:
-	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(DEV_CONFIG_DIR) go run migrate.go reset
+	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(DEV_CONFIG_DIR) go run migrate.go drop
+	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(DEV_CONFIG_DIR) go run migrate.go up
 
 .PHONY: clean
 clean:

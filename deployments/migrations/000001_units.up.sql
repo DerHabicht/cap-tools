@@ -17,16 +17,10 @@ CREATE TYPE unit_category AS ENUM (
 );
 
 CREATE TABLE units (
-    id              UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    created_at      TIMESTAMP NOT NULL,
-    updated_at      TIMESTAMP NOT NULL,
-    deleted_at      TIMESTAMP,
-    charter_number  VARCHAR(11) NOT NULL UNIQUE,
+    charter_number  VARCHAR(11) PRIMARY KEY,
     kind            unit_kind,
     category        unit_category,
     name            TEXT NOT NULL,
     address         TEXT NOT NULL,
     city            TEXT NOT NULL
 );
-
-CREATE INDEX deleted_units ON units (deleted_at);
