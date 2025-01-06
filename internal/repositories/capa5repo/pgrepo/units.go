@@ -160,7 +160,8 @@ WHERE charter_number = $1;
 
 	found := res.Next()
 	if !found {
-		return units.Unit{}, errors.Errorf("unit %s not found", charterNumber)
+		err = ErrNotFound{Object: "unit", Key: charterNumber}
+		return units.Unit{}, errors.WithStack(err)
 	}
 
 	var cn units.UnitCharterNumber
@@ -195,9 +196,18 @@ func (repo *PGRepository) DeleteUnit(unit units.Unit) error {
 		return errors.WithStack(err)
 	}
 
-	_, err = stmt.Exec(unit.CharterNumber())
+	res, err := stmt.Exec(unit.CharterNumber())
 	if err != nil {
 		return errors.WithStack(err)
+	}
+
+	affected, err := res.RowsAffected()
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	if affected == 0 {
+		return ErrNotFound{Object: "unit", Key: unit.CharterNumber()}
 	}
 
 	return nil

@@ -35,9 +35,17 @@ func (s *PGRepoTestSuite) TestMembers() {
 
 	err = s.repo.CreateOrUpdateMember(member)
 	assert.NoError(s.T(), err)
+
+	res, err = s.repo.FetchMember(capid)
+	assert.NoError(s.T(), err)
 	assert.Equal(s.T(), member.CAPID(), res.CAPID())
 	assert.Equal(s.T(), member.LastName(), res.LastName())
 	assert.Equal(s.T(), member.FirstName(), res.FirstName())
 	assert.Equal(s.T(), member.Grade(), res.Grade())
 
+	err = s.repo.DeleteMember(member)
+	assert.NoError(s.T(), err)
+
+	res, err = s.repo.FetchMember(capid)
+	assert.ErrorAs(s.T(), err, &ErrNotFound{})
 }

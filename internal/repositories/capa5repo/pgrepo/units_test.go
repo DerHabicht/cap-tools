@@ -66,7 +66,7 @@ func (s *PGRepoTestSuite) TestUnits() {
 	assert.Equal(s.T(), len(list), 0)
 
 	_, err = s.repo.FetchUnit(cn)
-	assert.Error(s.T(), err)
+	assert.ErrorAs(s.T(), err, &ErrNotFound{})
 }
 
 func (s *PGRepoTestSuite) TestUnitsSearch() {
