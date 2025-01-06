@@ -11,11 +11,9 @@ import (
 )
 
 func TestPGRepoIsA5Repo(t *testing.T) {
-	repo := PGRepository{}
-	var i any = repo
-	_, ok := i.(capa5repo.A5Repository)
-
-	assert.True(t, ok)
+	assert.NotPanics(t, func() {
+		var _ capa5repo.A5Repository = NewPGRepository(nil)
+	})
 }
 
 type PGRepoTestSuite struct {
@@ -31,6 +29,14 @@ func (s *PGRepoTestSuite) SetupSuite() {
 
 func (s *PGRepoTestSuite) TearDownSuite() {
 	err := s.repo.Close()
+	assert.NoError(s.T(), err)
+}
+
+func (s *PGRepoTestSuite) SetupTest() {
+	_, err := s.repo.db.Exec("TRUNCATE TABLE members;")
+	assert.NoError(s.T(), err)
+
+	_, err = s.repo.db.Exec("TRUNCATE TABLE units;")
 	assert.NoError(s.T(), err)
 }
 
