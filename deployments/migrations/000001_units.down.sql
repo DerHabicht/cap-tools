@@ -1,5 +1,3 @@
-DROP INDEX deleted_units;
-
 DROP TABLE units;
 
 DROP TYPE unit_category;

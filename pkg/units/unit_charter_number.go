@@ -114,7 +114,7 @@ func (h UnitCharterNumber) Value() (driver.Value, error) {
 func (h *UnitCharterNumber) Scan(src interface{}) error {
 	s, ok := src.(string)
 	if !ok {
-		return errors.Errorf("failed to scan value as type UnitCharterNumber: %v", src)
+		return errors.Errorf("failed to scan '%v' into type %T", s, *h)
 	}
 
 	cn, err := ParseCharterNumber(s)

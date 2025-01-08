@@ -33,10 +33,10 @@ func (s *PGRepoTestSuite) TearDownSuite() {
 }
 
 func (s *PGRepoTestSuite) SetupTest() {
-	_, err := s.repo.db.Exec("TRUNCATE TABLE members;")
+	_, err := s.repo.db.Exec("DELETE FROM members;")
 	assert.NoError(s.T(), err)
 
-	_, err = s.repo.db.Exec("TRUNCATE TABLE units;")
+	_, err = s.repo.db.Exec("DELETE FROM units;")
 	assert.NoError(s.T(), err)
 }
 

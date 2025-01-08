@@ -13,10 +13,14 @@ GIT_DIRTY = `git diff-index --quiet HEAD -- || echo 'x-'`
 LDFLAGS = -ldflags "-s -X main.BuildTime=$(BUILD_TIME) -X main.GitRevision=$(GIT_DIRTY)$(GIT_REVISION) -X main.GitBranch=$(GIT_BRANCH)"
 
 .PHONY: all
-all: bin/capa5srv
+all: 	bin/capa5srv \
+		bin/migrate
 
 bin/capa5srv: $(foreach f, $(SRC), $(f))
 	go build $(LD_FLAGS) -o bin/capa5srv cmd/capa5srv/main.go
+
+bin/migrate: $(foreach f, $(SRC), $(f))
+	go build -o bin/migrate cmd/migrate/main.go
 
 .PHONY: dev_setup
 dev_setup:
@@ -24,17 +28,17 @@ dev_setup:
 	mkdir -p $(TEST_CONFIG_DIR)
 
 .PHONY: test_db_up
-test_db_up:
-	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(TEST_CONFIG_DIR) go run migrate.go up
+test_db_up: bin/migrate
+	$(BASE_ENV_CONFIG_KEY)_CONFIG=./$(TEST_CONFIG_DIR) bin/migrate up
 
 .PHONY: test_db_down
-test_db_down:
-	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(TEST_CONFIG_DIR) go run migrate.go down
+test_db_down: bin/migrate
+	$(BASE_ENV_CONFIG_KEY)_CONFIG=./$(TEST_CONFIG_DIR) bin/migrate down
 
 .PHONY: test_db_reset
-test_db_reset:
-	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(TEST_CONFIG_DIR) go run migrate.go drop
-	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(TEST_CONFIG_DIR) go run migrate.go up
+test_db_reset: bin/migrate
+	$(BASE_ENV_CONFIG_KEY)_CONFIG=./$(TEST_CONFIG_DIR) bin/migrate drop
+	$(BASE_ENV_CONFIG_KEY)_CONFIG=./$(TEST_CONFIG_DIR) bin/migrate up
 
 .PHONY: test
 test: bin/capa5srv
@@ -46,17 +50,17 @@ dev_srv_run: bin/capa5srv
 	$(BASE_ENV_CONFIF_KEY)_CONFIG=./$(DEV_CONFIG_DIR) bin/capa5srv run
 
 .PHONY: dev_db_up
-dev_db_up:
-	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(DEV_CONFIG_DIR) go run migrate.go up
+dev_db_up: bin/migrate
+	$(BASE_ENV_CONFIF_KEY)_CONFIG=./$(DEV_CONFIG_DIR) bin/migrate up
 
 .PHONY: dev_db_down
-dev_db_down:
-	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(DEV_CONFIG_DIR) go run migrate.go down
+dev_db_down: bin/migrate
+	$(BASE_ENV_CONFIF_KEY)_CONFIG=./$(DEV_CONFIG_DIR) bin/migrate down
 
 .PHONY: dev_db_reset
 dev_db_reset:
-	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(DEV_CONFIG_DIR) go run migrate.go drop
-	cd tools/migrate/ && $(BASE_ENV_CONFIG_KEY)_CONFIG=../../$(DEV_CONFIG_DIR) go run migrate.go up
+	$(BASE_ENV_CONFIF_KEY)_CONFIG=./$(DEV_CONFIG_DIR) bin/migrate drop
+	$(BASE_ENV_CONFIF_KEY)_CONFIG=./$(DEV_CONFIG_DIR) bin/migrate up
 
 .PHONY: clean
 clean:

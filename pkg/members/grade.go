@@ -1,6 +1,8 @@
 package members
 
 import (
+	"database/sql/driver"
+
 	"github.com/pkg/errors"
 )
 
@@ -254,4 +256,39 @@ func (g Grade) ExtAbbv() string {
 	default:
 		panic(errors.Errorf("invalid grade value: %d", g))
 	}
+}
+
+func (g Grade) MarshalJSON() ([]byte, error) {
+	return []byte(g.String()), nil
+}
+
+func (g *Grade) UnmarshalJSON(b []byte) error {
+	s, err := ParseGrade(string(b))
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	*g = s
+
+	return nil
+}
+
+func (g Grade) Value() (driver.Value, error) {
+	return g.String(), nil
+}
+
+func (g *Grade) Scan(src interface{}) error {
+	s, ok := src.(string)
+	if !ok {
+		return errors.Errorf("failed to scan '%v' into type %T", s, *g)
+	}
+
+	p, err := ParseGrade(s)
+	if err != nil {
+		return errors.WithStack(err)
+	}
+
+	*g = p
+
+	return nil
 }

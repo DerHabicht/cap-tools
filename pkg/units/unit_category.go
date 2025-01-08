@@ -66,7 +66,7 @@ func (u UnitCategory) Value() (driver.Value, error) {
 func (u *UnitCategory) Scan(src any) error {
 	s, ok := src.(string)
 	if !ok {
-		return errors.Errorf("failed to scan value as type UnitCategory: %v", src)
+		return errors.Errorf("failed to scan '%v' into type %T", s, *u)
 	}
 
 	p := ParseUnitCategory(s)
