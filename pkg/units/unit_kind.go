@@ -41,17 +41,17 @@ func ParseUnitKind(s string) UnitKind {
 func (u UnitKind) String() string {
 	switch u {
 	case NatlHQ:
-		return "nhq"
+		return "NHQ"
 	case RegionHQ:
-		return "region"
+		return "REGION"
 	case WingHQ:
-		return "wing"
+		return "WING"
 	case Group:
-		return "group"
+		return "GROUP"
 	case Squadron:
-		return "squadron"
+		return "SQUADRON"
 	case Flight:
-		return "flight"
+		return "FLIGHT"
 	default:
 		return ""
 	}

@@ -1,19 +1,19 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TYPE unit_kind AS ENUM (
-    'nhq',
-    'region',
-    'wing',
-    'group',
-    'squadron',
-    'flight'
+    'NHQ',
+    'REGION',
+    'WING',
+    'GROUP',
+    'SQUADRON',
+    'FLIGHT'
 );
 
 CREATE TYPE unit_category AS ENUM (
-    'admin',
-    'composite',
-    'cadet',
-    'senior'
+    'ADMIN',
+    'COMPOSITE',
+    'CADET',
+    'SENIOR'
 );
 
 CREATE TABLE units (

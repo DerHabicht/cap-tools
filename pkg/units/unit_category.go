@@ -35,13 +35,13 @@ func ParseUnitCategory(s string) UnitCategory {
 func (u UnitCategory) String() string {
 	switch u {
 	case AdminUnit:
-		return "admin"
+		return "ADMIN"
 	case CompositeUnit:
-		return "composite"
+		return "COMPOSITE"
 	case CadetUnit:
-		return "cadet"
+		return "CADET"
 	case SeniorUnit:
-		return "senior"
+		return "SENIOR"
 	default:
 		return ""
 	}

@@ -27,7 +27,7 @@ func NewUser(
 	}
 }
 
-func (u User) Id() uuid.UUID {
+func (u User) ID() uuid.UUID {
 	return u.id
 }
 

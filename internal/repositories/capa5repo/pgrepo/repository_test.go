@@ -33,10 +33,19 @@ func (s *PGRepoTestSuite) TearDownSuite() {
 }
 
 func (s *PGRepoTestSuite) SetupTest() {
-	_, err := s.repo.db.Exec("DELETE FROM members;")
+	_, err := s.repo.db.Exec("DELETE FROM user_member_links;")
+	assert.NoError(s.T(), err)
+
+	_, err = s.repo.db.Exec("DELETE FROM user_unit_roles;")
+	assert.NoError(s.T(), err)
+
+	_, err = s.repo.db.Exec("DELETE FROM members;")
 	assert.NoError(s.T(), err)
 
 	_, err = s.repo.db.Exec("DELETE FROM units;")
+	assert.NoError(s.T(), err)
+
+	_, err = s.repo.db.Exec("DELETE FROM users;")
 	assert.NoError(s.T(), err)
 }
 
